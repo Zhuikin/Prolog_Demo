@@ -1,0 +1,342 @@
+<div class="notebook">
+
+<div class="nb-cell markdown" name="md2">
+### Erster Blick auf Prolog
+
+Prolog is eine deklarative Sprache, die sich besonders zur Verarbeitung von formaler Logik eignet.
+Es werden Fakten und Prädikate (Regeln) festgelegt und verarbeitet. 
+In dem Dokument sehen wir "Programe" und Queries. Eine Query fragt ab, ob eine Aussage unter der im "Program" festgelegten Wissensbasis wahr oder falsch ist. Queries können auch ausgeben, welche Fakten, wenn überhaupt, die Anfrage wahr machen würden.
+
+    % Queries werden eingeletet mit:
+    ?-
+
+### SWISH
+Für die Beispiele hier wird SWISH verwendet.
+
+https://swish.swi-prolog.org/
+
+SWISH ist ein online Prolog-Interpreter mit Notebook, ähnlich den aus dem Python Kurs bekannten Jupiter Notebooks. Auf der Seite https://www.swi-prolog.org/ findet man auch SWI-Prolog zum herunterladen und installieren (Allerdings ohne das SWISH Notebook interface).
+
+#### Dieses Notebook
+Das notebook liegt auf Gihub bereit und kann interaktiv in SWISH geladen werden (Es ist safe mit den Zellen zu experementieren - Änderungen werden *nicht* ins repository übernommen.):
+
+https://swish.swi-prolog.org/?code=https://raw.githubusercontent.com/Zhuikin/Files-and-Snipplets/main/swish.swinb
+
+### Hello World!
+</div>
+
+<div class="nb-cell program" name="p1">
+% das "Program"
+message :-
+	write('Hello World!'), 
+    nl.
+% der . (Punkt) signalisert das Ende eines Prädikats, Regel, oder Query.
+% Prozentzeichen leitet ein Kommentar ein
+
+</div>
+
+<div class="nb-cell query" name="q2">
+% und die dazugehörige query
+message.
+
+</div>
+
+<div class="nb-cell markdown" name="md19">
+#### Neck-Operator
+Der Operator :- verbindet bei der Festlegung von Regeln den Kopf (head) und Körper (body).
+
+    head :-
+        body	
+    Lies: head is wahr, wenn body wahr ist
+    head &lt;= body
+</div>
+
+<div class="nb-cell markdown" name="md1">
+### Beispiel Fragestellung (Constraint satisfaction): 
+Bei Constraint Satisfaction (Bedingungserfüllungsproblem) Problemen wird eine Variable (oder eine Variablenblegung) gesucht, die eine Reihe festgelegter Bedingungen oder Voraussetzungen (constraints) erfüllt. Diese Probleme sind oft sehr schwierig und haben eine hohe kombinatorische Komplexität (Die Suchräume werde bei vielen Variablen und Bedingungen sehr gross). 
+
+Prolog eignet sich recht gut dazu, solche Probleme darzustellen. Die Constraints können als Regeln in die Wissensbasis eingebaut werden um dan mit Queries Lösungen oder Lösbarkeit zu unteruchen.
+
+### Ein überschauberes Beispiel:
+#### Terminabgleich bei mehreren Teilnehmern
+Alice, Bob und Eve wollen sich treffen und suchen nech einem Termin.
+</div>
+
+<div class="nb-cell markdown" name="md3">
+#### Bedingungen:
+* Alice kann Montag, Dienstag, Mittwoch
+* Bob kann Dienstag, Mittwoch, Donnerstag, Freitag
+* Eve kann Mittwoch, Donnerstag, Fretitag
+</div>
+
+<div class="nb-cell program" name="p2">
+% Fakten
+alice_got_time("Mon").
+alice_got_time("Tue").
+alice_got_time("Wed").
+
+bob_got_time("Tue").
+bob_got_time("Wed").
+bob_got_time("Thu").
+bob_got_time("Fri").
+
+eve_got_time("Wed").
+eve_got_time("Thu").
+eve_got_time("Fri").
+
+% Die Regel
+meeting(Day) :-
+    alice_got_time(Day), % Komma , lesen wir als AND
+    bob_got_time(Day),   % AND
+    eve_got_time(Day).
+% Der Punkt . beendet das Prädikat.
+
+</div>
+
+<div class="nb-cell markdown" name="md4">
+Finde einen wert für die Variable Day, der mit allen Fakten verträglich ist:
+</div>
+
+<div class="nb-cell query" name="q1">
+meeting(Day).
+
+</div>
+
+<div class="nb-cell markdown" name="md5">
+Die Fakten kann man auch komplexer und flexibler darstellen. Z.B. mit Listen.
+</div>
+
+<div class="nb-cell program" name="p4">
+% Listen werden wie in Python als [..] angegeben
+meeting_from_list(Day) :-
+	member(Day, ["Mon", "Tue", "Wed"]), % Alice AND
+	member(Day, ["Tue", "Wed", "Thu", "Fri"]), % Bob AND
+    member(Day, ["Wed", "Thu", "Fri"]). % Eve
+
+</div>
+
+<div class="nb-cell query" name="q4">
+% Die "cut" Regel (!.) legt fest, die Suche nach dem ersten Treffer abzubrechen
+meeting_from_list(Day),
+!.
+
+</div>
+
+<div class="nb-cell markdown" name="md7">
+#### member
+member/2 ist ein built in Prädikat, dass die zusammengehörigkeit in einer Liste, Menge, prüft. (Das /2 steht hier für die Anzahl der Parameter.)
+</div>
+
+<div class="nb-cell query" name="q5">
+member(1, [1, 2, 3, 4]), !.
+
+</div>
+
+<div class="nb-cell query" name="q6">
+member(8, [1, 2, 3, 4]), !.
+
+</div>
+
+<div class="nb-cell markdown" name="md11">
+Diese Werte für Variable X würden das Prädikat wahr machen:
+</div>
+
+<div class="nb-cell query" name="q7">
+member(X, [1, 2, 3, 4]).
+
+</div>
+
+<div class="nb-cell markdown" name="md9">
+#### Weitere eingebaute Prädikate, z.B.
+#### Findall
+* findall( X, Regel, Liste ) : finde alle *X*, die *Regel* erfüllen, und sammle sie in *Liste*
+</div>
+
+<div class="nb-cell program" name="p6">
+eats(bob, meat).
+eats(alice, meat).
+eats(eve, veggies).
+
+</div>
+
+<div class="nb-cell markdown" name="md14">
+Bob und Alice sind in Meateaters.
+
+   MeatEaters ist in der Query ein Singleton.
+   Ein Singleton ist eine Variable, die in einem Prädikat nur ein Mal vorkommt.
+   Prolog erkennt das Singleton hier als die "unabhängige" Variable nach der gefragt wird.
+</div>
+
+<div class="nb-cell query" name="q9">
+findall(P, eats(P, meat), MeatEaters).
+
+</div>
+
+<div class="nb-cell markdown" name="md10">
+#### Forall
+* forall( C, Rule ) : ist erfüllt, wenn *Rule* für alle möglichen Belegungen von *C* erfüllt ist.
+</div>
+
+<div class="nb-cell markdown" name="md13">
+Bob ist in MeatEaters:
+</div>
+
+<div class="nb-cell query" name="q8">
+forall(findall(P, eats(P, meat), MeatEaters), member(bob, MeatEaters)).
+
+</div>
+
+<div class="nb-cell markdown" name="md16">
+Eve aber nicht:
+</div>
+
+<div class="nb-cell query" name="q12">
+forall(findall(P, eats(P, meat), MeatEaters), member(eve, MeatEaters)).
+
+</div>
+
+<div class="nb-cell markdown" name="md12">
+#### Zurück zur Termin Frage:
+Mit den Prädikaten *member*, *findall* und *forall* können wir nun den Terminabgleich etwas allgemeiner gestalten:
+</div>
+
+<div class="nb-cell program" name="p7">
+available(alice, ["Mon", "Tue", "Wed"]).
+available(bob, ["Tue", "Wed", "Thu", "Fri"]).
+available(eve, ["Wed", "Thu", "Fri"]).
+available(charlie, ["Mon", "Tue", "Wed", "Thu", "Fri"]).
+
+available_day(Day) :-
+    % _ ist, wie in Python, eine anonyme Variable, die nicht weiter ausgewertet wird.
+	% Es ist uns hier egal, wer die person ist, wir schaune uns nur die Tageslisten ann
+	findall(DayList, available(_, DayList), PeoplesDayLists),
+	forall(member(DayList, PeoplesDayLists), member(Day, DayList)).
+
+choose(Day) :-
+	member(Day, ["Mon", "Tue", "Wed", "Thu", "Fri"]),
+	available_day(Day),
+    !.
+
+</div>
+
+<div class="nb-cell query" name="q10">
+choose(Day)
+
+</div>
+
+<div class="nb-cell markdown" name="md15">
+#### Und nun noch eine "Kleinigkeit"...
+Bisher wurden die Regeln und aussagen mit , (Komma für AND bzw conjunktion) verbunden.
+</div>
+
+<div class="nb-cell program" name="p8">
+fact(a).
+fact(b).
+
+</div>
+
+<div class="nb-cell query" name="q11">
+fact(a), fact(b).
+
+</div>
+
+<div class="nb-cell query" name="q13">
+fact(a), fact(c).
+
+</div>
+
+<div class="nb-cell markdown" name="md17">
+Es ist auch möglich per ; (Semikolon) für OR zu verknüpfen.
+</div>
+
+<div class="nb-cell query" name="q14">
+fact(a); fact(c).
+
+</div>
+
+<div class="nb-cell markdown" name="md18">
+#### Und weil ich die nun schon habe...
+Die etwas unglücklichen Beispiele von Freitag Nachmittag:
+</div>
+
+<div class="nb-cell markdown" name="md6">
+### Türme von Hanoi
+http://www.kubitz-online.de/LK12_abi02/thema1/hanoi.html
+
+http://www.hippasos.com/html5/div/TuermeVonHanoi.html
+</div>
+
+<div class="nb-cell html" name="htm1">
+<img src="https://www.tutorialspoint.com/prolog/images/hanoi_problem.jpg">
+</div>
+
+<div class="nb-cell markdown" name="md8">
+Ziel ist es, den kompletten Scheiben-Stapel vom linken Stab auf den rechten Stab zu versetzen. Hierbei gelten zwei Regeln:
+
+* Es darf immer nur eine Scheibe gleichzeitig bewegt werden.
+* Die bewegte Scheibe darf nicht auf eine kleinere Scheibe gesteckt werden.
+* (Folglich sind zu jedem Zeitpunkt des Spieles die Scheiben auf jedem Feld der Größe nach geordnet.)
+</div>
+
+<div class="nb-cell markdown" name="md20">
+Türme von Hanoi kann als ein klassisches Beispiel für Rekursion beim Programieren dienen. Die Anzahl der nötigen Züge wächst sehr schnell exponentiell zu der Anzahl der Scheiben.
+</div>
+
+<div class="nb-cell program" name="p5">
+hanoi(1, Source, Target, _) :-
+    write('Move disk from '), write(Source), write(' to '), write(Target), nl.
+
+hanoi(N, Source, Target, Inter) :-
+    N &gt; 1,
+    M is N - 1,
+    hanoi(M, Source, Inter, Target),
+    hanoi(1, Source, Target, _),
+    hanoi(M, Inter, Target, Source),
+	!.
+
+</div>
+
+<div class="nb-cell query" name="q3">
+hanoi(3, "LINKS", "RECHTS", "MITTE").
+
+</div>
+
+<div class="nb-cell markdown" name="md21">
+### Fibonacci Folge
+Eine Rekursiv definierte Zahlenfolge, die ebenfalls exponentiell wächst (relativ langsam).
+* Fib(N) = Fib(N-1) + Fib(N-2)
+* Fib(0) = Fib(1) = 1
+</div>
+
+<div class="nb-cell program" name="p9">
+% Das Tupel steht hier für (N, Result = Fib(N))
+fib(0, 0).
+fib(1, 1).
+
+fib(N, Result) :-
+    N &gt; 1,
+    Nminus1 is N - 1,
+    Nminus2 is N - 2,
+    fib(Nminus1, Result1),
+    fib(Nminus2, Result2),
+    Result is Result1 + Result2,
+    !.
+
+</div>
+
+<div class="nb-cell query" name="q15">
+fib(6, Fib_6).
+
+</div>
+
+<div class="nb-cell query" name="q16">
+fib(7, Fib_7).
+
+</div>
+
+<div class="nb-cell query" name="q17">
+fib(8, Fib_8).
+
+</div>
+
+</div>
