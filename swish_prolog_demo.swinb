@@ -20,7 +20,7 @@ SWISH ist ein online Prolog-Interpreter mit Notebook, ähnlich den aus dem Pytho
 #### Dieses Notebook
 Das notebook liegt auf Gihub bereit und kann interaktiv in SWISH geladen werden (Es ist safe mit den Zellen zu experementieren - Änderungen werden *nicht* ins repository übernommen.):
 
-https://swish.swi-prolog.org/?code=https://raw.githubusercontent.com/Zhuikin/Files-and-Snipplets/main/swish.swinb
+https://swish.swi-prolog.org/?code=https://raw.githubusercontent.com/Zhuikin/Prolog_Demo/main/swish_prolog_demo.swinb
 
 ### Hello World!
 </div>
@@ -57,7 +57,7 @@ Bei Constraint Satisfaction (Bedingungserfüllungsproblem) Problemen wird eine V
 
 Prolog eignet sich recht gut dazu, solche Probleme darzustellen. Die Constraints können als Regeln in die Wissensbasis eingebaut werden um dan mit Queries Lösungen oder Lösbarkeit zu unteruchen.
 
-### Ein überschauberes Beispiel:
+### Ein überschaubares Beispiel:
 #### Terminabgleich bei mehreren Teilnehmern
 Alice, Bob und Eve wollen sich treffen und suchen nech einem Termin.
 </div>
